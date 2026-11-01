@@ -1,0 +1,25 @@
+# ============================================================
+#  行尾与二进制标记
+#  Keil / ARMCC 在 Windows 下对 CRLF 最友好，源码统一 CRLF；
+#  脚本类保持 LF，避免在 Linux/CI 上出现 ^M
+# ============================================================
+* text=auto
+
+*.c        text eol=crlf
+*.h        text eol=crlf
+*.s        text eol=crlf
+*.uvprojx  text eol=crlf
+*.uvoptx   text eol=crlf
+*.ioc      text eol=crlf
+*.bat      text eol=crlf
+
+*.py       text eol=lf
+*.md       text eol=lf
+*.sh       text eol=lf
+
+# 二进制资源
+*.lib      binary
+*.a        binary
+*.axf      binary
+*.hex      binary
+*.bin      binary

@@ -22,6 +22,7 @@
 #include "stm32f1xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "config.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,7 +42,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+static uint16_t s_ctrl_div = 0;   /* 控制节拍分频: SysTick=1ms, 每 CTRL_PERIOD_MS 次跑一拍控制 */
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,8 +58,7 @@
 /* External variables --------------------------------------------------------*/
 
 /* USER CODE BEGIN EV */
-extern void USART1_IRQHandler(void);
-
+extern void CtrlLoop(void);                    /* 控制节拍: 传感器采样 + 循迹控制 */
 
 /* USER CODE END EV */
 
@@ -189,7 +189,11 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-
+  if (++s_ctrl_div >= CTRL_PERIOD_MS)  /* SysTick 是 1ms, 分频出 CTRL_PERIOD_MS 的控制节拍 */
+  {
+    s_ctrl_div = 0;
+    CtrlLoop();                      /* 控制节拍(传感器采样 + 循迹控制) */
+  }
   /* USER CODE END SysTick_IRQn 1 */
 }
 

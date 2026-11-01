@@ -1,94 +1,33 @@
-#ifndef OLED_H
-#define OLED_H
+#ifndef __OLED_H
+#define __OLED_H
 
 #include "main.h"
-#include <stdint.h>
 
-#define OLED_WIDTH       128U
-#define OLED_HEIGHT      64U
-#define OLED_PAGE_COUNT  8U
+/* ============================================================================
+ *  OLED 显示模块 (1.3 寸 SH1106 128x64, 软件 SPI / 硬件 SPI2)
+ *  2026-09-28 新增。
+ *
+ *  为什么要它:
+ *      本工程【没有任何串口】(PA9/PA2/PA3 都被电机/探头占用了),
+ *      想看一眼"居中的误差是多少、差速下发了多少、编码器走到哪了"
+ *      以前是完全没办法 —— 只能靠上车跑圈看现象反推。
+ *      有了这块屏, 调参从"猜"变成"看"。
+ *
+ *  接线 / 引脚 / CubeMX 配置见 car.txt 的【OLED 章节】。
+ *
+ *  用法(main 的 while(1) 里):
+ *      Oled_Init();          // 上电调一次
+ *      while(1) { ...; Oled_Task(); }   // 主循环里反复调, 内部自己限速
+ * ========================================================================== */
 
-#define OLED_ADDRESS             0x78U
-#define OLED_COMMAND_TIMEOUT_MS  100U
-#define OLED_DATA_TIMEOUT_MS     100U
+/* 上电初始化(含 SH1106 的复位时序 + 显示一帧自检信息)。 */
+void Oled_Init(void);
 
-extern I2C_HandleTypeDef hi2c1;
+/* 主循环里反复调用即可。内部按 SIMPLE_OLED_REFRESH_MS 限速,
+ * 不会每次都真的刷屏 —— 刷一屏要阻塞约 1.8 ms(4.5 MHz 下 1024 字节)。 */
+void Oled_Task(void);
 
-extern uint8_t OLED_GRAM[OLED_WIDTH][OLED_PAGE_COUNT];
-
-/* ��ʼ����ˢ�� */
-void OLED_Init(void);
-void OLED_Refresh_Gram(void);
-void OLED_RequestRefresh(void);
-void OLED_Service(void);
-
-/* OLED ���� */
-void OLED_ON(void);
-void OLED_OFF(void);
-
-/* ����λ�� */
-void OLED_SetPos(uint8_t x, uint8_t page);
-
-/* �Դ���� */
-void OLED_GRAM_FILL(uint8_t fill_Data);
-void OLED_Fill(uint8_t fill_Data);
-void OLED_CLS(void);
-
-/* ���ز��� */
-void OLED_DrawPoint(uint8_t x, uint8_t y, uint8_t color);
-
-/* �ַ����ַ��� */
-void OLED_ShowChar(uint8_t x,
-                   uint8_t y,
-                   uint8_t chr,
-                   uint8_t size,
-                   uint8_t mode);
-
-void OLED_ShowStr(uint8_t x,
-                  uint8_t y,
-                  const uint8_t *str,
-                  uint8_t size,
-                  uint8_t mode);
-
-/* �߲�ӿڣ��кź��кŴ� 1 ��ʼ */
-void OLED_ShowString(uint8_t line,
-                     uint8_t column,
-                     const char *str);
-
-void OLED_ShowNum(uint8_t line,
-                  uint8_t column,
-                  uint32_t number,
-                  uint8_t length);
-
-void OLED_ShowSignedNum(uint8_t line,
-                        uint8_t column,
-                        int32_t number,
-                        uint8_t length);
-
-void OLED_ShowFloat(uint8_t line,
-                    uint8_t column,
-                    float number,
-                    uint8_t decimal);
-
-/* ���� */
-void OLED_ShowCN(uint8_t x,
-                 uint8_t page,
-                 uint8_t index);
-
-/* λͼ */
-void OLED_DrawBMP(uint8_t x0,
-                  uint8_t page0,
-                  uint8_t x1,
-                  uint8_t page1,
-                  const uint8_t *bmp);
-
-/* ���� */
-void OLED_draw_line(uint8_t x0,
-                    uint8_t y0,
-                    float k,
-                    uint8_t mode);
-
+/* 立刻刷一屏(不管限速)。 */
+void Oled_Refresh(void);
 
 #endif
-
-                    
