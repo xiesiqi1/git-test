@@ -94,6 +94,19 @@ TEST1/
 
 ## 三、快速启动
 
+### 0) 获取代码
+
+```bash
+git clone git@github.com:xiesiqi1/git-test.git
+cd git-test
+```
+
+仓库地址：<https://github.com/xiesiqi1/git-test>
+
+> 仓库里**不含编译产物**（`MDK-ARM/Test1/` 整个输出目录已在 `.gitignore` 中忽略），
+> `Test1.hex` 需要按下一步自行编译生成。这样每次提交只反映真实的代码改动，
+> 不会混入几十个 `.o` / `.axf`。
+
 ### 1) 接线
 
 按 `car.txt` 第一 ~ 五节接线。**最容易漏的一条：L298N 的 GND 必须与 STM32 的 GND 相连**，否则电机乱转或不动。
